@@ -1,24 +1,23 @@
 package main
 
-import "github.com/gin-gonic/gin"
+import (
+	controller "github.com/ajulthomas/golang-gin-poc/controllers"
+	"github.com/ajulthomas/golang-gin-poc/service"
+	"github.com/gin-gonic/gin"
+)
+
+var (
+	videoService    service.VideoService       = service.New()
+	videoController controller.VideoController = controller.New(videoService)
+)
 
 func main() {
 	server := gin.Default()
-	server.GET("/test", func(ctx *gin.Context) {
-		ctx.JSON(200, gin.H{
-			"head": gin.H{
-				"apiname":    "test",
-				"apiversion": "0.1.0",
-				"source":     "github.com/ajulthomas/golang-gin-poc",
-			},
-			"body": gin.H{
-				"message":   "success",
-				"userName":  "Ajul Thomas",
-				"frameWork": "gin-gonic",
-				"language":  "Go (aka golang)",
-				"editor":    "Microsoft Visual Studio Code",
-			},
-		})
+	server.GET("/videos", func(ctx *gin.Context) {
+		ctx.JSON(200, videoController.FindAll())
+	})
+	server.POST("/videos", func(ctx *gin.Context) {
+		ctx.JSON(200, videoController.Save(ctx))
 	})
 	server.Run(":8080")
 }
